@@ -3,10 +3,12 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SttFieldComponent } from './stt-field/stt-field.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SttFieldComponent
   ],
   imports: [
     BrowserModule,
