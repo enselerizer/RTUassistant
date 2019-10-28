@@ -1,1 +1,7 @@
-<p>stt-field works!</p>
+<p (click) = "this.clapd.startRecognition()">stt-field works!</p>
+
+
+<div class="col" *ngFor="let col of this.clapd.cols" [style.height]="col"></div>
+<div>{{this.clapsVal}}</div>
+<div>{{this.actionsVal}}</div>
+
