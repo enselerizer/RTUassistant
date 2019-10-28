@@ -13,7 +13,13 @@ function initWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+
+    resizable: true,
+    icon: __dirname + '/img/logo.png',
+    autoHideMenuBar: true,
+    frame: false
+
   })
 
   // Electron Build Path
@@ -26,7 +32,7 @@ function initWindow() {
   );
 
   // Initialize the DevTools.
-  appWindow.webContents.openDevTools()
+  //appWindow.webContents.openDevTools()
 
   appWindow.on('closed', function () {
     appWindow = null
