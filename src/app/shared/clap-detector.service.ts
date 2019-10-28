@@ -34,62 +34,71 @@ export class ClapDetectorSevice {
   constructor(private audioContext: AudioContext) {}
 
 
-  config = new ClapDetectorConfig(32, 8, 10, 0.2, 3, 1, 0.5);
+  config = new ClapDetectorConfig(32, 8, 15, 0.2, 3, 0.7, 0.3);
 
 
   cols: Uint8Array;
   claps: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  actionDetected: BehaviorSubject<void> = new BehaviorSubject<void>(null);
+  actionDetected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   clapDetectBuffer: boolean;
   clapDetectLastTime = 0;
   stopRecognitionFlag = false;
+  isRecognitionWorking = false;
 
 
-  startRecognition(autoStopRecognition: boolean = false) {
-    navigator.getUserMedia(
-        { audio: true, video: false },
-        (stream) => {
-            const source = this.audioContext.createMediaStreamSource(stream);
-            const analyser = this.audioContext.createAnalyser();
-            analyser.fftSize = this.config.fftSize;
-            analyser.smoothingTimeConstant = this.config.smoothing;
-            source.connect(analyser);
-            const Loop: () => void = () => {
-              setTimeout(() => {
-                this.cols = new Uint8Array(analyser.frequencyBinCount);
-                analyser.getByteFrequencyData(this.cols);
-                if (this.cols[this.config.detectionFftCol] >= this.config.detectionSensitivity && !this.clapDetectBuffer) {
-                  if (this.claps.getValue() === 0) {
-                    this.setClaps(1);
-                  } else {
-                    if (this.checkTimeInterval()) {
-                      this.setClaps(this.claps.getValue() + 1);
-                      if(this.claps.getValue() >= this.config.clapsSequenceSize) {
-                        this.setActionDetected();
-                        this.setClaps(0);
-                        if (!autoStopRecognition) {
-                          this.stopRecognition();
-                        }
-                      }
+  async startRecognition(autoStopRecognition: boolean = false) {
+
+    if (!this.isRecognitionWorking) {
+      this.isRecognitionWorking = true;
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      navigator.getUserMedia(
+          { audio: true, video: false },
+          (stream) => {
+              const source = this.audioContext.createMediaStreamSource(stream);
+              const analyser = this.audioContext.createAnalyser();
+              analyser.fftSize = this.config.fftSize;
+              analyser.smoothingTimeConstant = this.config.smoothing;
+              source.connect(analyser);
+              const Loop: () => void = () => {
+                setTimeout(() => {
+                  this.cols = new Uint8Array(analyser.frequencyBinCount);
+                  analyser.getByteFrequencyData(this.cols);
+                  if (this.cols[this.config.detectionFftCol] >= this.config.detectionSensitivity && !this.clapDetectBuffer) {
+                    if (this.claps.getValue() === 0) {
+                      this.setClaps(1);
                     } else {
-                      this.setClaps(0);
+                      if (this.checkTimeInterval()) {
+                        this.setClaps(this.claps.getValue() + 1);
+                        if(this.claps.getValue() >= this.config.clapsSequenceSize) {
+                          this.setActionDetected();
+                          this.setClaps(0);
+                          if (!autoStopRecognition) {
+                            this.stopRecognition();
+                          }
+                        }
+                      } else {
+                        this.setClaps(0);
+                      }
                     }
+                    this.setTimeInterval();
                   }
-                  this.setTimeInterval();
-                }
-                this.clapDetectBuffer = this.cols[8] >= 20;
-                if (!this.stopRecognitionFlag) {
-                  Loop();
-                } else {
-                  this.setClaps(0);
-                  this.stopRecognitionFlag = false;
-                }
-              }, 40);
-            };
-            Loop();
-        },
-        (error) => {}
-    );
+                  this.clapDetectBuffer = this.cols[8] >= 20;
+                  if (!this.stopRecognitionFlag) {
+                    Loop();
+                  } else {
+                    this.setClaps(0);
+                    this.stopRecognitionFlag = false;
+                  }
+                }, 20);
+              };
+              Loop();
+          },
+          (error) => {}
+      );
+    }
   }
 
   stopRecognition() {
@@ -114,7 +123,7 @@ export class ClapDetectorSevice {
   }
 
   setActionDetected() {
-    this.actionDetected.next();
+    this.actionDetected.next(true);
   }
 
 }
