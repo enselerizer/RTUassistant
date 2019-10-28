@@ -45,7 +45,7 @@ export class ClapDetectorSevice {
   stopRecognitionFlag = false;
 
 
-  startRecognition() {
+  startRecognition(autoStopRecognition: boolean = false) {
     navigator.getUserMedia(
         { audio: true, video: false },
         (stream) => {
@@ -67,6 +67,9 @@ export class ClapDetectorSevice {
                       if(this.claps.getValue() >= this.config.clapsSequenceSize) {
                         this.setActionDetected();
                         this.setClaps(0);
+                        if (!autoStopRecognition) {
+                          this.stopRecognition();
+                        }
                       }
                     } else {
                       this.setClaps(0);
@@ -78,9 +81,9 @@ export class ClapDetectorSevice {
                 if (!this.stopRecognitionFlag) {
                   Loop();
                 } else {
+                  this.setClaps(0);
                   this.stopRecognitionFlag = false;
                 }
-                console.log("running");
               }, 40);
             };
             Loop();
@@ -104,21 +107,6 @@ export class ClapDetectorSevice {
   checkTimeInterval(): boolean {
     return (this.getTimeInterval() <= this.config.spacingSize + this.config.spacingRange) &&
     (this.getTimeInterval() >= this.config.spacingSize - this.config.spacingRange);
-  }
-
-  async beep() {
-    if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
-    }
-
-    const oscillatorNode = this.audioContext.createOscillator();
-    const AnalyserNode = this.audioContext.createAnalyser();
-
-    oscillatorNode.onended = () => oscillatorNode.disconnect();
-    oscillatorNode.connect(this.audioContext.destination);
-
-    oscillatorNode.start();
-    oscillatorNode.stop(this.audioContext.currentTime + 0.5);
   }
 
   setClaps(newClaps: number) {
