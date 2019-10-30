@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ClapDetectorSevice } from '../shared/clap-detector.service';
 import {TweenMax, Power2, TimelineLite} from 'gsap/TweenMax';
+import { SpeechkitService } from '../shared/speechkit.service';
 
 @Component({
   selector: 'app-main-page',
@@ -9,7 +10,7 @@ import {TweenMax, Power2, TimelineLite} from 'gsap/TweenMax';
 })
 export class MainPageComponent implements OnInit {
 
-  constructor(private cd: ClapDetectorSevice, private ref: ChangeDetectorRef) { }
+  constructor(private cd: ClapDetectorSevice, private stt: SpeechkitService, private ref: ChangeDetectorRef) { }
 
   startRecognitionBtnLabel = 'Запустить распознавание';
 
@@ -59,6 +60,13 @@ export class MainPageComponent implements OnInit {
     TweenMax.to(document.getElementsByClassName('bg'), 0, {'background-color': '#ffffff'});
     this.startRecognitionBtnLabel = 'Распознавание работает';
     this.cd.startRecognition(true);
+  }
+
+  startRecord() {
+    this.stt.start();
+  }
+  stopRecord() {
+    this.stt.stop();
   }
 
 }
