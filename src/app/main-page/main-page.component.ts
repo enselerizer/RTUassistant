@@ -16,6 +16,8 @@ export class MainPageComponent implements OnInit {
 
   claps: boolean[];
 
+  isRecording = false;
+
   ngOnInit() {
     this.claps = [];
 
@@ -26,20 +28,7 @@ export class MainPageComponent implements OnInit {
       }
       this.ref.detectChanges();
       if(this.claps[0]) {
-        TweenMax.to(document.getElementById('hand1'), 0.1, {'font-size': '90pt', 'color': '#00dc00'});
         TweenMax.to(document.getElementsByClassName('bg'), 0.5, {'background-color': '#ffffff'});
-      } else {
-        TweenMax.to(document.getElementById('hand1'), 0.2, {'font-size': '70pt', 'color': '#000000'});
-      }
-      if(this.claps[1]) {
-        TweenMax.to(document.getElementById('hand2'), 0.1, {'font-size': '90pt', 'color': '#00dc00'});
-      } else {
-        TweenMax.to(document.getElementById('hand2'), 0.2, {'font-size': '70pt', 'color': '#000000'});
-      }
-      if(this.claps[2]) {
-        TweenMax.to(document.getElementById('hand3'), 0.1, {'font-size': '90pt', 'color': '#00dc00'});
-      } else {
-        TweenMax.to(document.getElementById('hand3'), 0.2, {'font-size': '70pt', 'color': '#000000'});
       }
       console.log(this.claps);
     });
@@ -64,9 +53,11 @@ export class MainPageComponent implements OnInit {
 
   startRecord() {
     this.stt.start();
+    this.isRecording = true;
   }
   stopRecord() {
     this.stt.stop();
+    this.isRecording = false;
   }
 
 }

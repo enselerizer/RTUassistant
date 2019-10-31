@@ -1,11 +1,16 @@
 <div class="bg d-flex flex-column align-items-center justify-content-center fixed-top fixed-bottom">
-  <div class="p-2 bd-highlight">
-    <i class="hand fa fa-hand-paper-o" id="hand1" aria-hidden="true"></i>
-    <i class="hand fa fa-hand-paper-o" id="hand2" aria-hidden="true"></i>
-    <i class="hand fa fa-hand-paper-o" id="hand3" aria-hidden="true"></i>
+
+  <div class="p-2 bd-highlight" style="margin-top: 100px">
+    <i class="hand fa fa-hand-paper-o" *ngFor="let clap of claps" [ngClass]="{checked: clap}" id="hand1" aria-hidden="true"></i>
+
 
   </div>
   <button type="button" class="btn btn-large btn-primary mt-5" (click)="this.startRecognition()">{{startRecognitionBtnLabel}}</button>
-  <button type="button" class="btn btn-large btn-primary mt-5" (click)="this.startRecord()">Запустить рекордер</button>
-  <button type="button" class="btn btn-large btn-primary mt-5" (click)="this.stopRecord()">Остановить рекордер</button>
+
+  <div>
+    <button type="button" *ngIf="!isRecording" class="btn  btn-danger mt-4" (click)="this.startRecord()">Запустить рекордер</button>
+    <button type="button" *ngIf="isRecording" class="btn  btn-danger mt-4" (click)="this.stopRecord()">Остановить рекордер</button>
+  </div>
+
+
 </div>
