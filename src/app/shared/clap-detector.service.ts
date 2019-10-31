@@ -80,7 +80,7 @@ export class ClapDetectorSevice {
                           }
                         }
                       } else {
-                        this.setClaps(0);
+                        this.setClaps(1);
                       }
                     }
                     this.setTimeInterval();
