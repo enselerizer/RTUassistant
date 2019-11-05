@@ -9,7 +9,7 @@ let appWindow
 
 function initWindow() {
   appWindow = new BrowserWindow({
-    width: 1000,
+    width: 1500,
     height: 800,
     webPreferences: {
       nodeIntegration: true
@@ -32,7 +32,7 @@ function initWindow() {
   );
 
   // Initialize the DevTools.
-  //appWindow.webContents.openDevTools()
+  appWindow.webContents.openDevTools()
 
   appWindow.on('closed', function () {
     appWindow = null

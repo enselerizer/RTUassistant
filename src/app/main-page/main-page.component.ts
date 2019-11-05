@@ -3,6 +3,7 @@ import { ClapDetectorSevice } from '../shared/clap-detector.service';
 import {TweenMax, Power2, TimelineLite} from 'gsap/TweenMax';
 import { SpeechkitService } from '../shared/speechkit.service';
 
+
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
@@ -19,6 +20,9 @@ export class MainPageComponent implements OnInit {
   isRecording = false;
 
   ngOnInit() {
+
+    this.stt.requestIAM();
+
     this.claps = [];
 
     this.cd.claps.subscribe((claps) => {

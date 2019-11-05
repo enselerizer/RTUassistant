@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as Recorder from '../../../ogg-recorder/recorder.min.js';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+
+export class SpeechkitAuthConfig {
+
+}
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +15,32 @@ import { Observable } from 'rxjs';
 export class SpeechkitService {
 
   recorder: Recorder;
+  IAM: string;
 
   constructor(private http: HttpClient) {}
 
 
+  bufferToBin(buffer) {
+    return Array
+        .from (new Uint8Array (buffer))
+        .map (b => b.toString(2).padStart(2, '0'))
+        .join('');
+}
 
+  getIAM(): string {
+    return this.IAM;
+  }
+
+  requestIAM() {
+
+    let body = {jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6ImFqZWFrNzEzaWNuMmsyNDdwajY2In0.eyJpc3MiOiJhamUxcjN2Y3RydGNzdm4xaGFlNiIsImF1ZCI6Imh0dHBzOi8vaWFtLmFwaS5jbG91ZC55YW5kZXgubmV0L2lhbS92MS90b2tlbnMiLCJpYXQiOjE1NzI4ODg2MjgsImV4cCI6MTU3Mjg5MTYyOH0.AbO9zmmPouyohCm6UKg0xguVXimVhDBEOalqQRDU919iW0ioxhfzE2H06vC3lveAtEJV9lf2sk4SpPgqNShqowgXjQWIfjIk3D39g7i6k_Jma7XOpq8vaLXUGNQOoiVpGvzpTxL4hKj5-3tPQQivYLRSCJq9ZBGCZBXE90sALRx1qQiErML4SpwIP7ETWZ805FbCqmCZWWWB-_6VdeJsaU6-qv_6I2ZeOjtKhKP7NOO3BygvpwZyzdEkpmbr97GbBLcTl441MwaVRC0hoPrizQruRcQrBMorrtpmHUkZ4pqlGGs7K89HSfLNUptkT5PpOSNwJlmUatcpttcEZMlw0Q"}
+    const headers = new HttpHeaders({});
+    const options = { headers: headers };
+    this.http.post('https://iam.api.cloud.yandex.net/iam/v1/tokens', body, options).subscribe((result: any) => {
+      this.IAM = result.iamToken;
+      console.log(this.IAM);
+    });
+  }
 
 
   start() {
@@ -32,33 +58,18 @@ export class SpeechkitService {
     });
 
 
-    this.recorder.ondataavailable = function( typedArray ){
-      var saveData = (function () {
-        var a = document.createElement("a");
-        document.body.appendChild(a);
-        return function (blob, fileName) {
-            var url = window.URL.createObjectURL(blob);
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        };
-    }());
+    this.recorder.ondataavailable = ( typedArray ) => {
+      const params = new HttpParams({
 
+      });
 
-
-
-
-      var dataBlob = new Blob( [typedArray], { type: 'audio/ogg' } );
-      var fileName = new Date().toISOString() + ".ogg";
-      var url = URL.createObjectURL( dataBlob );
-
-      saveData(dataBlob, fileName);
-
-
-
-
-      console.log(url);
+      const headers = new HttpHeaders({
+        'Authorization': 'Bearer ' + this.getIAM()
+      });
+      const options = { headers: headers, params: params };
+      this.http.post('https://stt.api.cloud.yandex.net/speech/v1/stt:recognize', typedArray.buffer,  options).subscribe((val) => {
+        console.log(val);
+      });
     };
 
   }
@@ -66,19 +77,6 @@ export class SpeechkitService {
   stop() {
     this.recorder.stop();
   }
-
-  // getIAM(): Observable<any> {
-  //   let body = {jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6ImFqZTgwYW01bnJhYmI4dGpzb2gyIn0.eyJpc3MiOiJhamUxcjN2Y3RydGNzdm4xaGFlNiIsImF1ZCI6Imh0dHBzOi8vaWFtLmFwaS5jbG91ZC55YW5kZXgubmV0L2lhbS92MS90b2tlbnMiLCJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjI0MDgyMn0.h6ikrUcaFuXhwxeZ7DMbgUD6i8a1iP4uyvjqR04GT_kSwxlZHnlZUWTMSOKuGspvda_X1GoQ_TApE-CmgDcHcLoJjP5Pk9mr7-lpfFz-0yJTYW09wpr-niZ23c-od0mryHXNotTXIAaEpSZwxrKrv7ccc2HUi4_NaM0latxUGch6G4CxWKbIOKDHQ-nxlLu7heBUuobhZoG1Qco45tCQQF0IlEVJL0qYvj3to_6c1myJYMuhOVu7luEsabo10XMKYkONfkAAGYgIDH19_rAq2I-LA6OJTPgeH6qpDPz6na__5aeqUFxA2NJOSHOSszVS09B0sXRQ3p8NkWvAiZKgaA"}
-  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-  //   const options = { headers: headers };
-  //   return this.http.post('https://iam.api.cloud.yandex.net/iam/v1/tokens', body, options);
-  // }
-
-  // requestIAM() {
-  //   this.getIAM().subscribe((val) => {
-  //     console.log(val);
-  //   });
-  // }
 
 
 
