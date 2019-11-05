@@ -62,7 +62,7 @@ export class SpeechkitService {
 
   requestIAM() {
 
-    let body = {jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6ImFqZTgwYW01bnJhYmI4dGpzb2gyIn0.eyJpc3MiOiJhamUxcjN2Y3RydGNzdm4xaGFlNiIsImF1ZCI6Imh0dHBzOi8vaWFtLmFwaS5jbG91ZC55YW5kZXgubmV0L2lhbS92MS90b2tlbnMiLCJpYXQiOjE1NzI0NTQ1ODQsImV4cCI6MTU3MjQ1NzU4NH0.vU8z4HM_OZsxRfvGU02hrY-ugFtAokMVgWtJ1GLRFsbsoEflJmUeqsCA-diQPLRo08yUwCTI91S446TpzzjtyX4WEcxVD4wdnocMLPm8DCwlsEq9CZ4zARYLDEjAwr13a8L6HlzOU84KaRMa9-cL_uGdQu5QM-Yf1tWDKdzqLMXTt2s7wkO2c5-EQMnWx26J9vMp7sKw9xySudoe7AOcFItjbDy3h0mW4X_afk8QdvKKcWcgDRebvuwdqI8efxnd1Lf00vM_04D4G-9ywHdeJJsiYwyBV18jouKOYg9Drfqxmpr3XZcCjMkCHjsOLdhO6umXQGXGG9yPGI28403TPg"}
+    let body = {jwt: "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiIsImtpZCI6ImFqZWFrNzEzaWNuMmsyNDdwajY2In0.eyJpc3MiOiJhamUxcjN2Y3RydGNzdm4xaGFlNiIsImF1ZCI6Imh0dHBzOi8vaWFtLmFwaS5jbG91ZC55YW5kZXgubmV0L2lhbS92MS90b2tlbnMiLCJpYXQiOjE1NzI4ODg2MjgsImV4cCI6MTU3Mjg5MTYyOH0.AbO9zmmPouyohCm6UKg0xguVXimVhDBEOalqQRDU919iW0ioxhfzE2H06vC3lveAtEJV9lf2sk4SpPgqNShqowgXjQWIfjIk3D39g7i6k_Jma7XOpq8vaLXUGNQOoiVpGvzpTxL4hKj5-3tPQQivYLRSCJq9ZBGCZBXE90sALRx1qQiErML4SpwIP7ETWZ805FbCqmCZWWWB-_6VdeJsaU6-qv_6I2ZeOjtKhKP7NOO3BygvpwZyzdEkpmbr97GbBLcTl441MwaVRC0hoPrizQruRcQrBMorrtpmHUkZ4pqlGGs7K89HSfLNUptkT5PpOSNwJlmUatcpttcEZMlw0Q"}
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers };
     this.http.post('https://iam.api.cloud.yandex.net/iam/v1/tokens', body, options).subscribe((result: any) => {
@@ -88,6 +88,7 @@ export class SpeechkitService {
 
 
     this.recorder.ondataavailable = ( typedArray ) => {
+      console.log(typedArray)
       const saveData = (() => {
         var a = document.createElement("a");
         document.body.appendChild(a);
@@ -100,7 +101,7 @@ export class SpeechkitService {
         };
     });
 
-      const dataBlob = new Blob( [typedArray], { type: 'audio/ogg' } );
+      const dataBlob = new Blob( [typedArray]);
       const fileName = new Date().toISOString() + ".ogg";
       const url = URL.createObjectURL( dataBlob );
 
@@ -113,7 +114,7 @@ export class SpeechkitService {
         'Transfer-Encoding': 'chunked'
       });
       const options = { headers: headers, params: params };
-      this.http.post('https://stt.api.cloud.yandex.net/speech/v1/stt:recognize', this.bufferToBin(typedArray),  options).subscribe((val) => {
+      this.http.post('https://stt.api.cloud.yandex.net/speech/v1/stt:recognize', typedArray.buffer,  options).subscribe((val) => {
         console.log(val);
       });
 
