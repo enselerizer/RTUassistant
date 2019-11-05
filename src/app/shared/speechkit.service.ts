@@ -43,6 +43,9 @@ export class SpeechkitService {
         numberOfChannels: 1,
         wavBitDepth: 16,
         encoderPath: './assets/ogg-recorder/encoderWorker.min.js',
+        maxFramesPerPage: 10,
+        encoderComplexity: 0,
+        resampleQuality: 0,
         streamPages: true
       });
       this.recorder.ondataavailable = ( typedArray ) => {
@@ -57,6 +60,9 @@ export class SpeechkitService {
 
     electron.ipcRenderer.on('SpeechkitRecognitionResult', (event, data) => {
       console.log(data.alternatives[0].text, data.final ? " --- ФИНАЛ" : "");
+      if(data.final) {
+        this.stopRecognition();
+      }
     });
   }
 
