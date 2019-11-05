@@ -21,7 +21,7 @@ export class MainPageComponent implements OnInit {
 
   ngOnInit() {
 
-    this.stt.requestIAM();
+    this.stt.init();
 
     this.claps = [];
 
@@ -56,11 +56,11 @@ export class MainPageComponent implements OnInit {
   }
 
   startRecord() {
-    this.stt.start();
+    this.stt.startRecognition();
     this.isRecording = true;
   }
   stopRecord() {
-    this.stt.stop();
+    this.stt.stopRecognition();
     this.isRecording = false;
   }
 
