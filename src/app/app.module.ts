@@ -8,12 +8,14 @@ import { AppComponent } from './app.component';
 import { AudioContextModule } from 'angular-audio-context';
 import { MainPageComponent } from './main-page/main-page.component';
 import { HttpClientModule } from '@angular/common/http';
+import { RecognizerPageComponent } from './recognizer-page/recognizer-page.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainPageComponent
+    MainPageComponent,
+    RecognizerPageComponent
   ],
   imports: [
     HttpClientModule,
