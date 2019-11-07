@@ -75,7 +75,7 @@ export class ClapDetectorSevice {
                         if(this.claps.getValue() >= this.config.clapsSequenceSize) {
                           this.setActionDetected();
                           this.setClaps(0);
-                          if (!autoStopRecognition) {
+                          if (autoStopRecognition) {
                             this.stopRecognition();
                           }
                         }
@@ -85,7 +85,7 @@ export class ClapDetectorSevice {
                     }
                     this.setTimeInterval();
                   }
-                  this.clapDetectBuffer = this.cols[8] >= 20;
+                  this.clapDetectBuffer = this.cols[this.config.detectionFftCol] >= this.config.detectionSensitivity;
                   if (!this.stopRecognitionFlag) {
                     Loop();
                   } else {
@@ -103,6 +103,7 @@ export class ClapDetectorSevice {
 
   stopRecognition() {
     this.stopRecognitionFlag = true;
+    this.isRecognitionWorking = false;
   }
 
   setTimeInterval() {

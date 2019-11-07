@@ -13,6 +13,7 @@ export class SpeechkitService {
   recorder: Recorder;
   initialized = false;
   isFinal = false;
+  recognizing = false;
   autoFinal;
 
   constructor(private http: HttpClient) {}
@@ -66,21 +67,31 @@ export class SpeechkitService {
   }
 
   startRecognition() {
-    this.recognition.next({hip: "", final: false});
-    electron.ipcRenderer.send('SpeechkitStartRecognition');
-    electron.ipcRenderer.once('SpeechkitRecognitionStarted', (event, data) => {
-      this.recorder.start();
-    });
-    setTimeout(() => {
-      if(this.recognition.getValue().hip === "") {
-        this.recognition.next({hip: "", final: true});
-        this.stopRecognition();
-      }
-    }, 4000);
+    if(!this.recognizing) {
+      this.recognizing = true;
+      this.recognition.next({hip: "", final: false});
+      electron.ipcRenderer.send('SpeechkitStartRecognition');
+      electron.ipcRenderer.once('SpeechkitRecognitionStarted', (event, data) => {
+        this.recorder.start();
+      });
+      setTimeout(() => {
+        if(this.recognition.getValue().hip === "") {
+          this.recognition.next({hip: "", final: true});
+          this.stopRecognition();
+        }
+      }, 4000);
+    }
   }
 
   stopRecognition() {
-    this.isFinal = true;
-    this.recorder.stop();
+    if(this.recognizing) {
+      this.recognizing = false;
+      this.isFinal = true;
+      this.recorder.stop();
+    }
+  }
+
+  isRecognizing() {
+    return this.recognizing;
   }
 }
