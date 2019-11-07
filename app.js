@@ -42,7 +42,7 @@ function initWindow() {
   );
 
   // Initialize the DevTools.
-  // appWindow.webContents.openDevTools();
+  appWindow.webContents.openDevTools();
 
   appWindow.on("closed", function() {
     appWindow = null;
@@ -138,19 +138,19 @@ function SpeechkitSetActualIAM(iamToken) {
 
 function SpeechkitGetActualIAM() {
   return new Promise((resolve, reject) => {
-    log("Получен запрос на проверку IAM");
+    log("Получен запрос на проверку IAM", speechkitLogging);
     if (Math.floor(new Date().getTime() / 1000) - lastIAMDate > 3200) {
-      log("Токен устарел, начинаем формирование JWT");
+      log("Токен устарел, начинаем формирование JWT", speechkitLogging);
       SpeechkitGenerateJWT().then(jwt => {
-        log("JWT сформирован, производим запрос IAM");
+        log("JWT сформирован, производим запрос IAM", speechkitLogging);
         SpeechkitRequestIAM(jwt).then(iamToken => {
-          log("Новый IAM получен");
+          log("Новый IAM получен", speechkitLogging);
           SpeechkitSetActualIAM(iamToken);
           resolve(lastIAM);
         });
       });
     } else {
-      log("Токен актуален");
+      log("Токен актуален", speechkitLogging);
       resolve(lastIAM);
     }
   });
@@ -198,7 +198,7 @@ function SpeechkitStreamRecognitionConfigure(callback) {
       config: {
         specification: {
           languageCode: "ru-RU",
-          profanityFilter: false,
+          profanityFilter: true,
           model: "general",
           partialResults: true,
           audioEncoding: "OGG_OPUS"
@@ -217,6 +217,7 @@ function SpeechkitStreamRecognitionConfigure(callback) {
         }
       );
       const packageObject = grpc.loadPackageDefinition(packageDefinition);
+      log(packageObject, speechkitLogging);
       const serviceConstructor =
         packageObject.yandex.cloud.ai.stt.v2.SttService;
       const grpcCredentials = grpc.credentials.createSsl(

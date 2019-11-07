@@ -6,21 +6,23 @@ import { Injectable } from '@angular/core';
 
 export class UISoundPlayerService {
 
-  audio;
-  isLoaded = false;
+  audios = {
+    isLoaded: false,
+    items: []
+  };
 
+  load() {
+    for (let i = 0; i < 4; i++) {
 
-
-  load(num) {
-    this.audio = new Audio();
-    this.audio.src = "./assets/sounds/ui"+num+".mp3";
-    this.audio.load();
-    this.isLoaded = true;
-
+      this.audios.items.push(new Audio());
+      this.audios.items[i].src = "./assets/sounds/ui"+(i+1)+".mp3";
+      this.audios.items[i].load();
+    }
+    this.audios.isLoaded = true;
   }
-  play() {
-    if (this.isLoaded){
-      this.audio.play();
+  play(num) {
+    if (this.audios.isLoaded){
+      this.audios.items[num-1].play();
     }
   }
 }

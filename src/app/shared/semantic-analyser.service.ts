@@ -331,4 +331,39 @@ export class SemanticAnalyserService {
     }
     return res;
   }
+
+
+  // Undone piece of code
+
+  // recognize(analysisResult) {
+  //   let generalActions = [];
+  //   let actions = [];
+  //   let model;
+  //   let error = { error: true };
+
+  //   analysisResult.forEach(term => {
+  //     if (term.type === 'action') {
+  //       if (term.target === 'general') {
+  //         generalActions.push(term);
+  //       } else {
+  //         actions.push(term);
+  //       }
+  //     }
+  //   });
+
+  //   if (generalActions.length === 0 && actions.length === 0) return error;
+  //   if (actions.length > 1) return error;
+
+  //   if (generalActions.length > 0 && actions.length === 0) {
+  //     model.action = 'show';
+
+
+
+  //   }
+
+
+
+
+  //   return error;
+  // }
 }
