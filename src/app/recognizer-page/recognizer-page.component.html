@@ -1,9 +1,15 @@
 <div class="bg d-flex flex-column align-items-center justify-content-center fixed-top fixed-bottom">
-  <h1 style="text-align: center;">{{recogRes}}</h1>
+  <!--<h1 style="text-align: center;">{{recogRes}}</h1>-->
+  <h1 style="text-align: center; font-size: 50pt;" class="mt-5">
+      <span *ngFor="let group of recogResFancy.groups">
+        <span *ngFor="let item of group.fancy" class="{{item.class}}" >{{item.val}}</span>
+      </span>
+  </h1>
+
   <div class="mt-4">
       <button type="button" class="btn"
       [ngClass]="{'disabled': this.isRecognizing, 'btn-dark': this.isRecognizing==false, 'btn-danger': this.isRecognizing}"
       (click)="this.startRec()">Запустить распознавание</button>
-    </div>
+  </div>
 
 </div>

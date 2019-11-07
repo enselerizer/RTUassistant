@@ -4,22 +4,23 @@ const axios = require("axios");
 const fs = require("fs");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
+const sphinx = require("node-sphinx");
 
 const { app, BrowserWindow, ipcMain } = require("electron");
 
 let lastIAM;
 let lastIAMDate;
 let call;
-let lastSender;
-let logging;
-
+let lastSpeechkitSender;
+let lastSpotterSender;
+let speechkitLogging;
+let spotterLogging;
 
 let appWindow;
 
 function initWindow() {
   appWindow = new BrowserWindow({
-    width: 1500,
-    height: 800,
+
     webPreferences: {
       nodeIntegration: true
     },
@@ -27,7 +28,8 @@ function initWindow() {
     resizable: true,
     icon: __dirname + "/img/logo.png",
     autoHideMenuBar: true,
-    frame: false
+    frame: false,
+    fullscreen:true
   });
 
   // Electron Build Path
@@ -40,7 +42,7 @@ function initWindow() {
   );
 
   // Initialize the DevTools.
-  appWindow.webContents.openDevTools();
+  //appWindow.webContents.openDevTools();
 
   appWindow.on("closed", function() {
     appWindow = null;
@@ -64,36 +66,36 @@ app.on("activate", function() {
 });
 
 ipcMain.on("SpeechkitInit", (event, data) => {
-  lastSender = event.sender;
-  logging = data.logging;
-  log("Инициализация Speechkit");
+  lastSpeechkitSender = event.sender;
+  speechkitLogging = data.logging;
+  log("Инициализация Speechkit", speechkitLogging);
   SpeechkitInit();
 });
 
 ipcMain.on("SpeechkitStartRecognition", (event, data) => {
-  lastSender = event.sender;
-  log("Получен запрос на установление соединения");
+  lastSpeechkitSender = event.sender;
+  log("Получен запрос на установление соединения", speechkitLogging);
   SpeechkitStreamRecognitionConfigure(result => {
-    log("Получен результат распознавания");
+    log("Получен результат распознавания", speechkitLogging);
     event.sender.send("SpeechkitRecognitionResult", result);
   }).then(() => {
-    log("Соединение установлено");
+    log("Соединение установлено", speechkitLogging);
     event.sender.send("SpeechkitRecognitionStarted");
   });
 });
 
 ipcMain.on("SpeechkitUploadChunk", (event, data) => {
-  lastSender = event.sender;
-  log("Получен запрос на отправку чанка");
+  lastSpeechkitSender = event.sender;
+  log("Получен запрос на отправку чанка", speechkitLogging);
   SpeechkitStreamRecognitionSendChunk(data.chunk, data.final).then(() => {
-    log("Чанк отправлен");
+    log("Чанк отправлен", speechkitLogging);
     event.sender.send("SpeechkitRecognitionFinished");
   });
 });
 
 ipcMain.on("SpeechkitFinalizeRecognition", (event, data) => {
-  lastSender = event.sender;
-  log("Получен запрос на финализацию соединения");
+  lastSpeechkitSender = event.sender;
+  log("Получен запрос на финализацию соединения", speechkitLogging);
   SpeechkitStreamRecognitionFinalize().then(() => {
     event.sender.send("SpeechkitRecognitionFinalized");
   });
@@ -101,8 +103,27 @@ ipcMain.on("SpeechkitFinalizeRecognition", (event, data) => {
 
 
 
-function log(data) {
-  if (logging) lastSender.send('log', {msg: data});
+
+ipcMain.on("SpotterInit", (event, data) => {
+  lastSpotterSender = event.sender;
+  spotterLogging = data.logging;
+  log("Инициализация Spotter", spotterLogging);
+  SpotterInit();
+});
+
+ipcMain.on("SpotterStartRecognition", (event, data) => {
+  lastSpotterSender = event.sender;
+  log("Запуск поиска команды", spotterLogging);
+  SpotterStartRecognition().then((res) => {
+    log("Результат: ", spotterLogging);
+    log(res, spotterLogging);
+  });
+});
+
+
+
+function log(data, enable) {
+  if (enable) lastSpeechkitSender.send('log', {msg: data});
 }
 
 function SpeechkitInit() {
@@ -235,3 +256,38 @@ function SpeechkitStreamRecognitionSendChunk(chunkBuffer, final) {
   });
 }
 
+
+function SpotterInit() {
+  return new Promise((resolve, reject) => {
+    sphinx.recognizerInit(
+      {
+        hmm: './node_modules/node-sphinx/src/pocketsphinx/model/en-us/en-us',
+        lm: './node_modules/node-sphinx/src/pocketsphinx/model/en-us/en-us.lm.bin',
+        dict: './node_modules/node-sphinx/src/pocketsphinx/model/en-us/cmudict-en-us.dict'
+      },
+      (data, error) => {
+        if (error) {
+          console.log(error);
+          reject();
+        }
+        if (data.rc !== 0) {
+          console.log('Ошибка инициализации: rc=' + data.rc);
+          reject();
+        }
+        resolve();
+      }
+    );
+  });
+}
+
+function SpotterStartRecognition() {
+  return new Promise((resolve, reject) => {
+    sphinx.recognizerStart((error, data) => {
+      if (error) {
+        console.log(error);
+        reject();
+      }
+      resolve(data.result);
+    });
+  });
+}

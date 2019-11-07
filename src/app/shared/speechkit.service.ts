@@ -66,6 +66,7 @@ export class SpeechkitService {
   }
 
   startRecognition() {
+    this.recognition.next({hip: "", final: false});
     electron.ipcRenderer.send('SpeechkitStartRecognition');
     electron.ipcRenderer.once('SpeechkitRecognitionStarted', (event, data) => {
       this.recorder.start();
