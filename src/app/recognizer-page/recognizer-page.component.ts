@@ -67,6 +67,7 @@ export class RecognizerPageComponent implements OnInit {
     this.recogRes = "";
     this.isRecognizing = true;
     this.isWasInput = false;
+    this.ref.detectChanges();
   }
 
   onRecognitionProcessing(data) {
