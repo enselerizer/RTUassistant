@@ -1,27 +1,21 @@
-# RTUAssistant
+# About RTUAssistant
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.0.
+RTUAssistant is an Angular-based voice assistant app for information desks at universities developed at the Russian Technological University for internal use. It uses Yandex.Speechkit API for speech recognition and the Electron framework for standalone running.
 
-## Development server
+# Warning!
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+:construction: The project is currently under development. Most of the functionality has not yet been implemented.
 
-## Code scaffolding
+## Run
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `npm run electron` to run the project.
 
-## Build
+## How it works
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+The application uses a clap recognition algorithm for offline detection of an activation command. As soon as this happened, the application starts transmitting speech to Yandex.Speechkit servers in streaming mode, while simultaneously receiving and displaying intermediate recognition results.
 
-## Running unit tests
+The end of the command phrase is determined by the Yandex.Speechkit API, after which the application analyzes the final result and passes it to RTUAssistantBackend, from where it receives the requested data.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

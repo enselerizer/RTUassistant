@@ -1,15 +1,24 @@
 <div class="bg d-flex flex-column align-items-center justify-content-center fixed-top fixed-bottom">
   <!--<h1 style="text-align: center;">{{recogRes}}</h1>-->
-  <h1 style="text-align: center; font-size: 50pt;" class="mt-5">
+
+  <h1 style="text-align: center;" class="" *ngIf="isRecognizing == false">
+    <span class="stt-hint">три хлопка для старта</span>
+  </h1>
+
+  <h1 style="text-align: center;" class="" *ngIf="isRecognizing == true && recogResFancy.groups.length == 0">
+    <span class="stt-hint">произнесите команду...</span>
+  </h1>
+
+  <h1 style="text-align: center; font-size: 50pt;" class="">
       <span *ngFor="let group of recogResFancy.groups">
         <span *ngFor="let item of group.fancy" class="{{item.class}}" @stt-word >{{item.val}} </span>
       </span>
   </h1>
 
-  <div class="mt-4">
+  <!--<div class="mt-4">
       <button type="button" class="btn"
       [ngClass]="{'disabled': this.isRecognizing, 'btn-dark': this.isRecognizing==false, 'btn-danger': this.isRecognizing}"
       (click)="this.startRecognition()">Запустить распознавание</button>
-  </div>
+  </div>-->
 
 </div>
