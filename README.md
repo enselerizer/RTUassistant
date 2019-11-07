@@ -8,7 +8,7 @@ RTUAssistant is an Angular-based voice assistant app for information desks at un
 
 ## Run
 
-Run `npm run start:electron` to run the project.
+Run `npm run electron` to run the project.
 
 ## How it works
 
