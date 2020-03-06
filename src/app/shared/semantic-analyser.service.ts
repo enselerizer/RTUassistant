@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class SemanticAnalyserService {
   improveString(str: string) {
     let res = str;
+    res = res.toLowerCase();
 
     // Форматирование названий аудиторий
     res = res.replace(
@@ -21,6 +22,11 @@ export class SemanticAnalyserService {
     let res = {
       groups: []
     };
+
+    if(str) {
+      str = str[0].toLowerCase() + str.substring(1);
+    }
+
 
     while (str.length > 0) {
 

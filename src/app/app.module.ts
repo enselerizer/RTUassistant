@@ -9,6 +9,8 @@ import { AudioContextModule } from 'angular-audio-context';
 import { MainPageComponent } from './main-page/main-page.component';
 import { HttpClientModule } from '@angular/common/http';
 import { RecognizerPageComponent } from './recognizer-page/recognizer-page.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
 
 
 @NgModule({
@@ -21,6 +23,7 @@ import { RecognizerPageComponent } from './recognizer-page/recognizer-page.compo
     HttpClientModule,
     NgbModule,
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     AudioContextModule.forRoot('balanced')
   ],
