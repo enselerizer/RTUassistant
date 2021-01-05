@@ -23,7 +23,7 @@
     "@angular/router": "~8.2.3",
     "@ng-bootstrap/ng-bootstrap": "^5.1.2",
     "angular-audio-context": "^25.0.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bindings": "^1.5.0",
     "bootstrap": "^4.3.1",
     "font-awesome": "^4.7.0",
